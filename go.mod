@@ -1,3 +1,3 @@
-module github.com/kihengk/gotools/v1
+module github.com/kihengk/gotools
 
 go 1.19
