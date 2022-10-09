@@ -1,0 +1,38 @@
+#!/bin/sh
+
+BRANCH_NAME=`git symbolic-ref HEAD | sed -e 's:^refs/heads/::'`
+if test $BRANCH_NAME = main -o $BRANCH_NAME = develop; then
+  echo "cannot commit on ${BRANCH_NAME} branch directly"
+  exit 1
+fi
+
+gopackages=$(git diff --cached --name-only --diff-filter=ACM | grep '.go$'| xargs -n1 dirname| sort -u| sed 's/^/.\//' )
+
+[ -z "$gopackages" ] && exit 0
+
+echo "Info: git diff (go packages)"
+echo $gopackages
+echo "Info: Runnning go golangci-lint"
+linterr="$(golangci-lint run $gopackages 2>&1 )"
+if [ -n "$linterr" ] ; then
+    echo "fatal:"
+    echo $linterr
+    exit 1
+fi
+
+echo "Info: golangci-lint -> OK"
+
+unformatted=$(goimports -l $gopackages 2>&1 )
+if [ -n "$unformatted" ] ; then
+    echo "Info: unformatted file: $unformatted"
+    echo "Info: Running goimports"
+    for fn in $unformatted; do
+        goimports -w $fn
+        echo >&2 "goimports -w $fn"
+        git add $fn
+    done
+fi
+
+echo "Info: goinports -> OK"
+
+exit 0
