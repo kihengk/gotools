@@ -1,4 +1,4 @@
-package tools
+package generics
 
 func Map[T any, R any](a []T, f func(T) R) []R {
 	var result []R
