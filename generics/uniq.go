@@ -1,4 +1,4 @@
-package tools
+package generics
 
 func Unique[T comparable](a []T) []T {
 	u := make([]T, 0, len(a))

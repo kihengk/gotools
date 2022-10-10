@@ -1,4 +1,4 @@
-package tools
+package generics
 
 func Filter[T any](a []T, filterFunc func(val T) bool) []T {
 	var result []T

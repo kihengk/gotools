@@ -1,4 +1,4 @@
-package tools
+package generics
 
 type List[T comparable] struct {
 	l []T
